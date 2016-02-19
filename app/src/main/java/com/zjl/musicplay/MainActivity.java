@@ -1,16 +1,19 @@
 package com.zjl.musicplay;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tv_love;
+    private RelativeLayout jump_local_music;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,6 +21,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tv_love=(TextView) findViewById(R.id.tv_love);
         tv_love.setOnClickListener(this);
+
+        jump_local_music=(RelativeLayout)findViewById(R.id.jump_local_music);
+        jump_local_music.setOnClickListener(this);
     }
 
     @Override
@@ -48,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.tv_love:
                 Toast.makeText(getApplicationContext(),"我喜欢",Toast.LENGTH_LONG).show();
                 break;
+            case R.id.jump_local_music:
+                Toast.makeText(getApplicationContext(),"跳到本地音乐列表",Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(this,MusicLocalActivity.class);
+                startActivity(intent);
+                break;
+
         }
     }
 }
