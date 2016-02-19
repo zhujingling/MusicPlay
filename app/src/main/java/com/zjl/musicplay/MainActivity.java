@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(),"跳到本地音乐列表",Toast.LENGTH_LONG).show();
                 Intent intent=new Intent(this,MusicLocalActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.scale_in,R.anim.scale_out);
                 break;
 
         }
