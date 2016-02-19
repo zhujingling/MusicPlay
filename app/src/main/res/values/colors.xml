@@ -2,4 +2,9 @@
 <resources>
     <color name="textviewpress">#1C9DF0</color>
     <color name="textviewunpress">#88ffffff</color>
+
+
+    <!--字母选中颜色-->
+    <!--好友界面-->
+    <color name="select_letter">#5B5B5B</color>
 </resources>
