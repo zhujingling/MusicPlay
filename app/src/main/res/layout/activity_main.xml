@@ -33,12 +33,6 @@
                     android:layout_below="@+id/searce_song"
                     android:gravity="left|center"
                     android:hint="搜索歌词" />
-
-                <!--<SearchView-->
-                <!--android:id="@+id/searce_song"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:layout_gravity="right"></SearchView>-->
                 <ImageView
                     android:id="@+id/searce_song"
                     android:layout_width="wrap_content"
@@ -98,7 +92,8 @@
                 android:background="#969696"/>
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="60dp">
+                android:layout_height="60dp"
+                android:clickable="true">
                 <TextView
                     android:id="@+id/tv_love"
                     android:layout_width="wrap_content"
@@ -107,7 +102,8 @@
                     android:gravity="center"
                     android:drawableTop="@drawable/song_love"
                     android:layout_weight="1"
-                    android:text="我喜欢" />
+                    android:text="我喜欢"
+                    android:background="@drawable/textview_selector"/>
 
                 <TextView
                     android:id="@+id/tv_menu"
