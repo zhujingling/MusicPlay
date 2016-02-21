@@ -5,4 +5,34 @@
         <!-- Customize your theme here. -->
     </style>
 
+
+    <style name="ImageTranslucentTheme" parent="AppTheme">
+        <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
+    </style>
+
+    <style name="ColorTranslucentTheme" parent="AppTheme">
+
+    </style>
+
+    <style name="Theme.ToolBar.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorPrimary">@color/color_red</item>
+        <item name="actionOverflowButtonStyle">@style/ActionButton.Overflow.Base</item>
+    </style>
+
+    <style name="Theme.ToolBar.Base.Title" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color_red</item>
+    </style>
+
+    <style name="Theme.ToolBar.Base.Subtitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/color_43d28d</item>
+    </style>
+
+
+    <style name="ActionButton.Overflow.Base" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/local_help</item>
+    </style>
+
 </resources>

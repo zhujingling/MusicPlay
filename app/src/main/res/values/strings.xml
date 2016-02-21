@@ -3,4 +3,11 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+
+    <string name="local_music_title">本地音乐</string>
+    <string name="local_music_search">查找本地音乐</string>
+    <string name="local_music_sort_singer">按歌手排序</string>
+    <string name="local_music_sort_time">按时间排序</string>
+    <string name="back_main">返回主页</string>
 </resources>

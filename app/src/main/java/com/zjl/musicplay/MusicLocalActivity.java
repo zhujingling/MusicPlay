@@ -1,14 +1,18 @@
 package com.zjl.musicplay;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zjl.adapter.MusicLocalAdapter;
 import com.zjl.component.LettersSideBarView;
@@ -19,7 +23,7 @@ import java.util.ArrayList;
 /**
  * Created by Administrator on 2016/2/19.
  */
-public class MusicLocalActivity extends Activity implements LettersSideBarView.OnTouchingLetterChangedListener {
+public class MusicLocalActivity extends Activity implements LettersSideBarView.OnTouchingLetterChangedListener, View.OnClickListener {
 
     private MusicLocalAdapter musicLocalAdapter;
     private Sort mSort;
@@ -74,6 +78,42 @@ public class MusicLocalActivity extends Activity implements LettersSideBarView.O
 
             lettersSideBarView.setTextView(mTagIcon);
             lettersSideBarView.setOnTouchingLetterChangedListener(this);
+
+
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+            toolbar.setNavigationIcon(R.drawable.back_main);//设置导航栏图标
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+//            toolbar.setLogo(R.mipmap.ic_launcher);//设置app logo
+//            toolbar.setTitle(R.string.local_music_title);//设置主标题
+//            toolbar.setSubtitle(R.string.local_music_title);//设置子标题
+
+            toolbar.inflateMenu(R.menu.local_music_toolbar_menu);//设置右上角的填充菜单
+            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+
+                    int menuItemId = item.getItemId();
+                    if (menuItemId == R.id.action_search) {
+                        Toast.makeText(getApplicationContext(), R.string.local_music_search, Toast.LENGTH_SHORT).show();
+
+                    } else if (menuItemId == R.id.action_item1) {
+                        Toast.makeText(getApplicationContext(), R.string.local_music_sort_singer, Toast.LENGTH_SHORT).show();
+
+                    } else if (menuItemId == R.id.action_item2) {
+                        Toast.makeText(getApplicationContext(), R.string.local_music_sort_time, Toast.LENGTH_SHORT).show();
+
+                    }
+                    return true;
+                }
+            });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,5 +129,10 @@ public class MusicLocalActivity extends Activity implements LettersSideBarView.O
         if (position != -1) {
             localMusicList.setSelection(position);
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

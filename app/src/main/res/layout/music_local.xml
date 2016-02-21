@@ -1,49 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:toolbar="http://schemas.android.com/apk/res-auto"
     android:id="@+id/music_local"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <!--<RelativeLayout-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="#0188fd"-->
+    <!--android:padding="10dp">-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/back_main"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:background="@drawable/back_main"/>-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:text="本地音乐"-->
+    <!--android:textSize="20sp"/>-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/search_local_music"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:layout_marginRight="40dp"-->
+    <!--android:background="@drawable/search_song"/>-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/local_music_help"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:background="@drawable/local_help"/>-->
+    <!--</RelativeLayout>-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content">-->
+    <!--<include layout="@layout/local_music_toolbar"></include>-->
+    <!--</LinearLayout>-->
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#0188fd"
-        android:padding="10dp">
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/back_main"
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/back_main"/>
+            android:background="@color/color_0176da"
+            toolbar:popupTheme="@style/Theme.ToolBar.Base">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="本地音乐"
-            android:textSize="20sp"/>
-
-        <ImageButton
-            android:id="@+id/search_local_music"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="40dp"
-            android:background="@drawable/search_song"/>
-
-        <ImageButton
-            android:id="@+id/local_music_help"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/local_help"/>
-    </RelativeLayout>
+            <!--自定义控件-->
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textSize="20dp"
+                android:text="@string/local_music_title" />
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -53,14 +81,13 @@
         <ListView
             android:id="@+id/local_music_list"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-        </ListView>
+            android:layout_height="fill_parent"></ListView>
 
         <com.zjl.component.LettersSideBarView
             android:id="@+id/letter_sidebar"
             android:layout_width="30dp"
             android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
     <LinearLayout
