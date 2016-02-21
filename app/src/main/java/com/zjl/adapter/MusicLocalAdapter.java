@@ -59,11 +59,6 @@ public class MusicLocalAdapter extends ArrayAdapter implements SectionIndexer {
                 .findViewById(R.id.music_list_singer);
         tViewSinger.setText(getItem(position).toString());
 
-
-//        tViewSong = (TextView) view
-//                .findViewById(R.id.music_list_song);
-//        tViewSong.setText(getItem(position).toString());
-
         return view;
     }
 

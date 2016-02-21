@@ -4,6 +4,7 @@
     android:id="@+id/music_local"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <!--<RelativeLayout-->
@@ -61,14 +62,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/color_0176da"
-            toolbar:popupTheme="@style/Theme.ToolBar.Base">
+            toolbar:popupTheme="@style/Theme.ToolBar.Music">
 
             <!--自定义控件-->
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:textSize="20dp"
+                android:textSize="@dimen/textSize"
+                android:textColor="#ffffff"
                 android:text="@string/local_music_title" />
         </android.support.v7.widget.Toolbar>
     </LinearLayout>
