@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         jump_local_music = (RelativeLayout) findViewById(R.id.jump_local_music);
         jump_local_music.setOnClickListener(this);
+
+        getMusicInfos(this);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private List<Music> getMusicInfos(Context context) {
+    private void getMusicInfos(Context context) {
         Cursor cursor = context.getContentResolver().query(
 
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
@@ -138,6 +140,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
         CommonManage.getCommoManage().musicList = musicsInfos;
-        return musicsInfos;
     }
 }
