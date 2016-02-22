@@ -21,6 +21,6 @@
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:statusBarColor">@color/color_0176da</item>
-        <item name="actionOverflowButtonStyle">@style/ActionButton.Overflow.Music</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionButton.Overflow.Music</item>
     </style>
 </resources>
