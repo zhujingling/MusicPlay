@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,12 +37,15 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
     private MusicLocalAdapter musicLocalAdapter;
     private Sort mSort;
     private ArrayList<String> musicArrayList;
+    private List<Music> listMusicInfos;
     private ListView localMusicList;
     private LettersSideBarView lettersSideBarView;
     private TextView mTagIcon;
     private Toolbar toolbar;
 
     private String[] oldData;
+
+    private int listPosition;
 
     @Nullable
     @Override
@@ -52,6 +56,7 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
             initAdapter();
 
             localMusicList.setOnTouchListener(new initEvents());
+            localMusicList.setOnItemClickListener(new initEvents());
             lettersSideBarView.setTextView(mTagIcon);
             lettersSideBarView.setOnTouchingLetterChangedListener(this);
 
@@ -103,6 +108,8 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
                                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                                         | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                                 PixelFormat.TRANSLUCENT));
+
+        listMusicInfos=CommonManage.getCommoManage().musicList;
     }
 
     private void initAdapter() {
@@ -146,7 +153,7 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
 
     }
 
-    private class initEvents implements View.OnClickListener, View.OnTouchListener,Toolbar.OnMenuItemClickListener {
+    private class initEvents implements View.OnClickListener, View.OnTouchListener,Toolbar.OnMenuItemClickListener,ListView.OnItemClickListener{
 
         @Override
         public void onClick(View v) {
@@ -178,5 +185,16 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
             }
             return true;
         }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            listPosition = position;
+            play();
+        }
+    }
+
+
+    public void play() {
+
     }
 }
