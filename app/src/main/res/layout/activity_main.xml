@@ -1,272 +1,73 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/main_bg"
-    android:orientation="vertical">
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/main"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="30dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/frame_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/frame_play"
+        android:layout_alignParentTop="true"></FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_play"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true">
 
         <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <FrameLayout
-                android:id="@+id/search"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="#272727">
+            <!--<FrameLayout-->
+                <!--android:id="@+id/fragment_play"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1">-->
 
-                <TextView
-                    android:id="@+id/input_song"
-                    android:layout_width="fill_parent"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/searce_song"
-                    android:gravity="left|center"
-                    android:hint="搜索歌词" />
                 <ImageView
-                    android:id="@+id/searce_song"
+                    android:id="@+id/bottom_header"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bottom_header"/>
+
+                <ImageButton
+                    android:id="@+id/paly_next"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right|center"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/search_song" />
-            </FrameLayout>
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/play_next" />
 
+                <ImageButton
+                    android:id="@+id/play_pause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_toLeftOf="@+id/paly_next"
+                    android:background="@drawable/play_pause" />
 
+                <TextView
+                    android:id="@+id/bottom_singer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/bottom_header"
+                    android:layout_toRightOf="@+id/bottom_header"
+                    android:text="歌手"/>
+
+                <TextView
+                    android:id="@+id/bottom_song_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/play_pause"
+                    android:layout_alignLeft="@+id/bottom_singer"
+                    android:text="歌名"/>
+            <!--</FrameLayout>-->
         </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="20dp"
-            android:background="#88ffffff"
-            android:orientation="vertical">
-
-           <RelativeLayout
-               android:layout_width="fill_parent"
-               android:layout_height="60dp">
-              <RelativeLayout
-                  android:id="@+id/jump_local_music"
-                  android:layout_width="fill_parent"
-                  android:layout_height="fill_parent">
-                  <TextView
-                      android:id="@+id/bottom_singer"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_alignParentTop="true"
-                      android:layout_marginLeft="20dp"
-                      android:layout_marginTop="5dp"
-                      android:text="本地音乐"
-                      android:textSize="18dp" />
-
-                  <TextView
-                      android:id="@+id/bottom_song_name"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_alignLeft="@+id/bottom_singer"
-                      android:layout_alignParentBottom="true"
-                      android:layout_marginBottom="5dp"
-                      android:text="30首" />
-              </RelativeLayout>
-
-               <ImageView
-                   android:id="@+id/paly_music"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentRight="true"
-                   android:layout_centerVertical="true"
-                   android:layout_marginRight="30dp"
-                   android:background="@drawable/play" />
-
-           </RelativeLayout>
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:background="#969696"/>
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:clickable="true">
-                <TextView
-                    android:id="@+id/tv_love"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:drawableTop="@drawable/song_love"
-                    android:layout_weight="1"
-                    android:text="我喜欢"
-                    android:background="@drawable/textview_selector"/>
-
-                <TextView
-                    android:id="@+id/tv_menu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:drawableTop="@drawable/song_menu"
-                    android:layout_weight="1"
-                    android:text="我的歌单" />
-
-                <TextView
-                    android:id="@+id/tv_down"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:drawableTop="@drawable/song_down"
-                    android:layout_weight="1"
-                    android:text="下载管理" />
-
-                <TextView
-                    android:id="@+id/tv_recent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:drawableTop="@drawable/song_recent"
-                    android:layout_weight="1"
-                    android:text="最近播放" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="10dp"
-            android:background="#88ffffff"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:orientation="horizontal">
-
-              <LinearLayout
-                  android:layout_width="0dp"
-                  android:layout_height="fill_parent"
-                  android:layout_weight="1"
-                  android:gravity="center_horizontal">
-                  <TextView
-                      android:id="@+id/tv_music_library"
-                      android:layout_width="wrap_content"
-                      android:layout_height="fill_parent"
-                      android:gravity="center_vertical"
-                      android:drawablePadding="5dp"
-                      android:drawableLeft="@drawable/music_library"
-                      android:text="乐库" />
-              </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="fill_parent"
-                    android:background="#969696"/>
-
-              <LinearLayout
-                  android:layout_width="0dp"
-                  android:layout_height="fill_parent"
-                  android:layout_weight="1"
-                  android:gravity="center_horizontal">
-                  <TextView
-                      android:id="@+id/tv_singer"
-                      android:layout_width="wrap_content"
-                      android:layout_height="fill_parent"
-                      android:drawablePadding="5dp"
-                      android:gravity="center_vertical"
-                      android:drawableLeft="@drawable/singer"
-                      android:text="歌手" />
-              </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#969696"/>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal">
-                    <TextView
-                        android:id="@+id/tv_mv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:gravity="center_vertical"
-                        android:drawablePadding="5dp"
-                        android:drawableLeft="@drawable/mv"
-                        android:text="MV" />
-                </LinearLayout>
-
-                <View
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="1dp"
-                    android:layout_height="fill_parent"
-                    android:background="#969696"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal">
-                    <TextView
-                        android:id="@+id/tv_nearby"
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:drawablePadding="5dp"
-                        android:gravity="center_vertical"
-                        android:drawableLeft="@drawable/nearby"
-                        android:text="附近" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:background="#88ffffff"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_horizontal">
-                <TextView
-                    android:id="@+id/tv_more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:drawablePadding="10dp"
-                    android:gravity="center_vertical"
-                    android:drawableLeft="@drawable/more"
-                    android:text="更多" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <include layout="@layout/foot_bottom"></include>
-    </LinearLayout>
-</LinearLayout>
+    </FrameLayout>
+</RelativeLayout>
