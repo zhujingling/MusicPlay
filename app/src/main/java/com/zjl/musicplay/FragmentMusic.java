@@ -1,7 +1,9 @@
 package com.zjl.musicplay;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,10 +21,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zjl.adapter.MusicLocalAdapter;
+import com.zjl.adapter.MusicListViewAdapter;
 import com.zjl.component.LettersSideBarView;
 import com.zjl.constant.CommonManage;
+import com.zjl.constant.Constant;
 import com.zjl.entity.Music;
+import com.zjl.service.PlayService;
 import com.zjl.util.Sort;
 
 import java.util.ArrayList;
@@ -31,14 +35,14 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/2/24.
  */
-public class FragmentMusicList extends Fragment implements LettersSideBarView.OnTouchingLetterChangedListener {
+public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouchingLetterChangedListener {
 
     private FragmentMain fragmentMain;
-    private MusicLocalAdapter musicLocalAdapter;
+    private MusicListViewAdapter musicListViewAdapter;
     private Sort mSort;
-    private ArrayList<String> musicArrayList;
+    private ArrayList<String> musicListViewTitle;//音乐列表的标题
     private List<Music> listMusicInfos;
-    private ListView localMusicList;
+    private ListView musicListView;
     private LettersSideBarView lettersSideBarView;
     private TextView mTagIcon;
     private Toolbar toolbar;
@@ -46,6 +50,10 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
     private String[] oldData;
 
     private int listPosition;
+
+    private int currentTime;
+    private String url;
+    private BroadcastReceiver broadcastReceiver;
 
     @Nullable
     @Override
@@ -55,8 +63,8 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
             initComponent(view);
             initAdapter();
 
-            localMusicList.setOnTouchListener(new initEvents());
-            localMusicList.setOnItemClickListener(new initEvents());
+            initSetViewOnClick();
+
             lettersSideBarView.setTextView(mTagIcon);
             lettersSideBarView.setOnTouchingLetterChangedListener(this);
 
@@ -68,7 +76,6 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
                     fragmentMainView();
                 }
             });
-
             toolbar.inflateMenu(R.menu.local_music_toolbar_menu);//设置右上角的填充菜单
             toolbar.setOnMenuItemClickListener(new initEvents());
             return view;
@@ -82,16 +89,16 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
     public void onTouchingLetterChanged(String s) {
         int position = 0;
         // 该字母首次出现的位置
-        if (musicLocalAdapter != null) {
-            position = musicLocalAdapter.checkSection(s);
+        if (musicListViewAdapter != null) {
+            position = musicListViewAdapter.checkSection(s);
         }
         if (position != -1) {
-            localMusicList.setSelection(position);
+            musicListView.setSelection(position);
         }
     }
 
     private void initComponent(View view) {
-        localMusicList = (ListView) view.findViewById(R.id.local_music_list);
+        musicListView = (ListView) view.findViewById(R.id.local_music_list);
         lettersSideBarView = (LettersSideBarView) view.findViewById(R.id.letter_sidebar);
         mTagIcon = (TextView) this.getActivity().getLayoutInflater().inflate(R.layout.music_tag_icon, null);
 
@@ -109,19 +116,27 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
                                         | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                                 PixelFormat.TRANSLUCENT));
 
-        listMusicInfos=CommonManage.getCommoManage().musicList;
+        listMusicInfos = CommonManage.getCommoManage().musicList;
+        broadcastReceiver=new BroadcastReceiver();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constant.BrocastConstant.UPDATE_ACTION);
+        filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
+        filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
+        getActivity().registerReceiver(broadcastReceiver, filter);
     }
 
     private void initAdapter() {
         mSort = new Sort();
         setOldData(CommonManage.getCommoManage().musicList);
-        musicArrayList = mSort.addChar(mSort.autoSort(oldData));
-        musicLocalAdapter = new MusicLocalAdapter(getActivity(), android.R.layout.simple_list_item_1, musicArrayList);
-        localMusicList.setAdapter(musicLocalAdapter);
+        musicListViewTitle = mSort.addChar(mSort.autoSort(oldData));
+        musicListViewAdapter = new MusicListViewAdapter(getActivity(), android.R.layout.simple_list_item_1, musicListViewTitle);
+        musicListView.setAdapter(musicListViewAdapter);
     }
 
     private void initSetViewOnClick() {
-
+        musicListView.setOnTouchListener(new initEvents());
+        musicListView.setOnItemClickListener(new initEvents());
     }
 
 
@@ -153,7 +168,7 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
 
     }
 
-    private class initEvents implements View.OnClickListener, View.OnTouchListener,Toolbar.OnMenuItemClickListener,ListView.OnItemClickListener{
+    private class initEvents implements View.OnClickListener, View.OnTouchListener, Toolbar.OnMenuItemClickListener, ListView.OnItemClickListener {
 
         @Override
         public void onClick(View v) {
@@ -195,6 +210,35 @@ public class FragmentMusicList extends Fragment implements LettersSideBarView.On
 
 
     public void play() {
-
+        Intent intent = new Intent(getActivity(), PlayService.class);
+        intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
+        intent.putExtra("url", listMusicInfos.get(listPosition).getUrl());
+        intent.putExtra("listPosition", listPosition);
+        intent.putExtra("action", Constant.PlayConstant.PLAY);
+        getActivity().startService(intent);
     }
+
+    //用来接收Server发回来的广播
+    public class BroadcastReceiver extends android.content.BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Constant.BrocastConstant.MUSIC_CURRENT.equals(action)) {
+                currentTime = intent.getIntExtra("currentTime", -1);
+            } else if (Constant.BrocastConstant.MUSIC_DURATION.equals(action)) {
+                int duration = intent.getIntExtra("duration", -1);
+            } else if (Constant.BrocastConstant.UPDATE_ACTION.equals(action)) {
+                //获取Intent中的current消息，current代表当前正在播放的歌曲
+                listPosition = intent.getIntExtra("current", -1);
+                url = listMusicInfos.get(listPosition).getUrl();
+                if (listPosition >= 0) {
+
+                }
+                if (listPosition == 0) {
+                }
+            }
+        }
+    }
+
 }

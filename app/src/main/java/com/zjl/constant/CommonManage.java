@@ -22,4 +22,6 @@ public class CommonManage {
     }
 
     public List<Music> musicList=new ArrayList<Music>();
+    public boolean isPlaying=false;
+    public boolean isPause=false;;
 }

@@ -1,22 +1,19 @@
 package com.zjl.service;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.zjl.constant.CommonManage;
+import com.zjl.constant.Constant;
 import com.zjl.entity.Music;
-import com.zjl.musicplay.PlayActivity;
 
 import java.util.List;
 
@@ -26,22 +23,16 @@ import java.util.List;
 public class PlayService extends Service {
     private MediaPlayer mp;
     private List<Music> musicList;
-    //当前播放歌曲的索引
-    private int currentListItem = 0;
 
     private String path;            // 音乐文件路径
     private boolean isPause;        // 暂停状态
     private int current = 0;        // 记录当前正在播放的音乐
-    private MyReceiver myReceiver;  //自定义广播接收器
+    private BroadcastReceiver broadcastReceiver;  //自定义广播接收器
     private int currentTime;        //当前播放进度
     private int duration;           //播放长度
     private int status = 3;         //播放状态，默认为顺序播放
 
-    //服务要发送的一些Action
-    public static final String UPDATE_ACTION = "com.wwj.action.UPDATE_ACTION";  //更新动作
-    public static final String CTL_ACTION = "com.wwj.action.CTL_ACTION";        //控制动作
-    public static final String MUSIC_CURRENT = "com.wwj.action.MUSIC_CURRENT";  //当前音乐播放时间更新动作
-    public static final String MUSIC_DURATION = "com.wwj.action.MUSIC_DURATION";//新音乐长度更新动作
+    private int action;
 
     private Handler handler = new Handler() {
         @Override
@@ -49,7 +40,7 @@ public class PlayService extends Service {
             if (msg.what == 1) {
                 currentTime = mp.getCurrentPosition();
                 Intent intent = new Intent();
-                intent.setAction(MUSIC_CURRENT);
+                intent.setAction(Constant.BrocastConstant.MUSIC_CURRENT);
                 intent.putExtra("currentTime", currentTime);
                 sendBroadcast(intent); // 给PlayerActivity发送广播
                 handler.sendEmptyMessageDelayed(1, 1000);
@@ -68,7 +59,7 @@ public class PlayService extends Service {
                 if (status == 3) { // 顺序播放
                     current++;  //下一首位置
                     if (current <= musicList.size() - 1) {
-                        Intent sendIntent = new Intent(UPDATE_ACTION);
+                        Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
                         sendIntent.putExtra("current", current);
                         // 发送广播，将被Activity组件中的BroadcastReceiver接收到
                         sendBroadcast(sendIntent);
@@ -77,7 +68,7 @@ public class PlayService extends Service {
                     } else {
                         mp.seekTo(0);
                         current = 0;
-                        Intent sendIntent = new Intent(UPDATE_ACTION);
+                        Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
                         sendIntent.putExtra("current", current);
                         // 发送广播，将被Activity组件中的BroadcastReceiver接收到
                         sendBroadcast(sendIntent);
@@ -87,10 +78,14 @@ public class PlayService extends Service {
         });
 
 
-        myReceiver = new MyReceiver();
+        broadcastReceiver = new BroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(PlayActivity.CTL_ACTION);
-        registerReceiver(myReceiver, filter);
+        filter.addAction(Constant.BrocastConstant.UPDATE_ACTION);
+        filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
+        filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
+        filter.addAction(Constant.BrocastConstant.CTL_ACTION);
+        filter.addAction(Constant.BrocastConstant.MUSIC_SERVICE);
+        registerReceiver(broadcastReceiver, filter);
 
     }
 
@@ -100,7 +95,38 @@ public class PlayService extends Service {
         return null;
     }
 
-// 播放音乐
+    @Override
+    public boolean bindService(Intent service, ServiceConnection conn, int flags) {
+        return super.bindService(service, conn, flags);
+    }
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        path = intent.getStringExtra("url");        //歌曲路径
+        current = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
+        action = intent.getIntExtra("action", 0);         //播放信息
+        if (action == Constant.PlayConstant.PLAY) {    //直接播放音乐
+            play(0);
+        } else if (action == Constant.PlayConstant.PLAY_PAUSE) {    //暂停
+            pause();
+        } else if (action == Constant.PlayConstant.PLAY_STOP) {     //停止
+            stop();
+        } else if (action == Constant.PlayConstant.PLAY_CONTINUE) { //继续播放
+            resume();
+        } else if (action == Constant.PlayConstant.PLAY_PRIVIOUS) { //上一首
+//            previous();
+        } else if (action == Constant.PlayConstant.PLAY_NEXT) {     //下一首
+//            next();
+        } else if (action == Constant.PlayConstant.PLAY_PROGRESS) {  //进度更新
+            currentTime = intent.getIntExtra("progress", -1);
+            play(currentTime);
+        } else if (action == Constant.PlayConstant.PLAY_NOW) {
+            handler.sendEmptyMessage(1);
+        }
+        super.onStart(intent, startId);
+    }
+
+    // 播放音乐
 
     private void play(int currentTime) {
         try {
@@ -136,7 +162,7 @@ public class PlayService extends Service {
      * 下一首
      */
     private void nextMusic() {
-        Intent sendIntent = new Intent(UPDATE_ACTION);
+        Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
         sendIntent.putExtra("current", current);
         // 发送广播，将被Activity组件中的BroadcastReceiver接收到
         sendBroadcast(sendIntent);
@@ -184,14 +210,14 @@ public class PlayService extends Service {
                 mp.seekTo(currentTime);
             }
             Intent intent = new Intent();
-            intent.setAction(MUSIC_DURATION);
+            intent.setAction(Constant.BrocastConstant.MUSIC_DURATION);
             duration = mediaPlayer.getDuration();
             intent.putExtra("duration", duration);  //通过Intent来传递歌曲的总长度
             sendBroadcast(intent);
         }
     }
 
-    public class MyReceiver extends BroadcastReceiver {
+    public class BroadcastReceiver extends android.content.BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {

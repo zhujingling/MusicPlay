@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
  * Created by Administrator on 2016/2/19.
  */
-public class MusicLocalAdapter extends ArrayAdapter implements SectionIndexer {
+public class MusicListViewAdapter extends ArrayAdapter implements SectionIndexer {
 
     public ArrayList<String> mObject;
 
@@ -31,8 +31,8 @@ public class MusicLocalAdapter extends ArrayAdapter implements SectionIndexer {
             "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
             "W", "X", "Y", "Z","#"};
 
-    public MusicLocalAdapter(Context context, int textViewResourceId,
-                             ArrayList<String> objects) {
+    public MusicListViewAdapter(Context context, int textViewResourceId,
+                                ArrayList<String> objects) {
         super(context, textViewResourceId, objects);
         // TODO Auto-generated constructor stub
         initArrayList();
