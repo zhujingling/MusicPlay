@@ -53,13 +53,13 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
 
     private int currentTime;
     private String url;
-    private BroadcastReceiver broadcastReceiver;
+    private FragmentMusicReceiver fragmentMusicReceiver;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
-            View view = inflater.inflate(R.layout.music_local, null);
+            View view = inflater.inflate(R.layout.fragment_music, null);
             initComponent(view);
             initAdapter();
 
@@ -117,13 +117,12 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
                                 PixelFormat.TRANSLUCENT));
 
         listMusicInfos = CommonManage.getCommoManage().musicList;
-        broadcastReceiver=new BroadcastReceiver();
+        fragmentMusicReceiver =new FragmentMusicReceiver();
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Constant.BrocastConstant.UPDATE_ACTION);
         filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
         filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
-        getActivity().registerReceiver(broadcastReceiver, filter);
+        getActivity().registerReceiver(fragmentMusicReceiver, filter);
     }
 
     private void initAdapter() {
@@ -219,7 +218,7 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     }
 
     //用来接收Server发回来的广播
-    public class BroadcastReceiver extends android.content.BroadcastReceiver {
+    public class FragmentMusicReceiver extends android.content.BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {

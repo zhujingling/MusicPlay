@@ -26,12 +26,13 @@ public class FragmentMain extends Fragment {
     private TextView tv_love;
     private RelativeLayout jump_local_music;
     private ImageView play_music;
+    private TextView song_count;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
-            View view = inflater.inflate(R.layout.music_main, null);
+            View view = inflater.inflate(R.layout.fragment_main, null);
             initComponent(view);
             initSetViewOnClick();
             return view;
@@ -42,18 +43,25 @@ public class FragmentMain extends Fragment {
     }
 
     private void initComponent(View view) {
-        play_music = (ImageView) view.findViewById(R.id.paly_music);
-        tv_love = (TextView) view.findViewById(R.id.tv_love);
-        jump_local_music = (RelativeLayout) view.findViewById(R.id.jump_local_music);
+       try{
+           play_music = (ImageView) view.findViewById(R.id.play_music);
+           tv_love = (TextView) view.findViewById(R.id.tv_love);
+           jump_local_music = (RelativeLayout) view.findViewById(R.id.jump_local_music);
+           song_count = (TextView) view.findViewById(R.id.song_count);
+
+           song_count.setText(Integer.toString(CommonManage.getCommoManage().musicList.size())+"首");
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     private void initSetViewOnClick() {
-        tv_love.setOnClickListener(new ViewOnClick());
-        jump_local_music.setOnClickListener(new ViewOnClick());
-        play_music.setOnClickListener(new ViewOnClick());
+        tv_love.setOnClickListener(new initEvents());
+        jump_local_music.setOnClickListener(new initEvents());
+        play_music.setOnClickListener(new initEvents());
     }
 
-    private class ViewOnClick implements View.OnClickListener {
+    private class initEvents implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
@@ -61,7 +69,7 @@ public class FragmentMain extends Fragment {
                 case R.id.jump_local_music:
                     fragmentMusicListView();
                     break;
-                case R.id.paly_music:
+                case R.id.play_music:
                     playMusic(getRandomMusicPosition());
                     break;
             }
@@ -81,6 +89,8 @@ public class FragmentMain extends Fragment {
         intent.putExtra("url", CommonManage.getCommoManage().musicList.get(listPosition).getUrl());
         intent.putExtra("listPosition", listPosition);
         intent.putExtra("action", Constant.PlayConstant.PLAY);
+        intent.putExtra("singer", CommonManage.getCommoManage().musicList.get(listPosition).getArtist());
+        intent.putExtra("song", CommonManage.getCommoManage().musicList.get(listPosition).getTitle());
         getActivity().startService(intent);
         CommonManage.getCommoManage().isPlaying = true;
     }

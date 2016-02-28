@@ -27,8 +27,10 @@ public class PlayService extends Service {
     private String path;            // 音乐文件路径
     private boolean isPause;        // 暂停状态
     private int current = 0;        // 记录当前正在播放的音乐
-    private BroadcastReceiver broadcastReceiver;  //自定义广播接收器
+    private PlayServiceReceiver playServiceReceiver;  //自定义广播接收器
     private int currentTime;        //当前播放进度
+    private String singer;//歌手
+    private String song;//歌名
     private int duration;           //播放长度
     private int status = 3;         //播放状态，默认为顺序播放
 
@@ -42,7 +44,9 @@ public class PlayService extends Service {
                 Intent intent = new Intent();
                 intent.setAction(Constant.BrocastConstant.MUSIC_CURRENT);
                 intent.putExtra("currentTime", currentTime);
-                sendBroadcast(intent); // 给PlayerActivity发送广播
+                intent.putExtra("singer", singer);
+                intent.putExtra("song", song);
+                sendBroadcast(intent);
                 handler.sendEmptyMessageDelayed(1, 1000);
             }
         }
@@ -78,14 +82,14 @@ public class PlayService extends Service {
         });
 
 
-        broadcastReceiver = new BroadcastReceiver();
+        playServiceReceiver = new PlayServiceReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.BrocastConstant.UPDATE_ACTION);
         filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
         filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
         filter.addAction(Constant.BrocastConstant.CTL_ACTION);
         filter.addAction(Constant.BrocastConstant.MUSIC_SERVICE);
-        registerReceiver(broadcastReceiver, filter);
+        registerReceiver(playServiceReceiver, filter);
 
     }
 
@@ -105,6 +109,8 @@ public class PlayService extends Service {
         path = intent.getStringExtra("url");        //歌曲路径
         current = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
         action = intent.getIntExtra("action", 0);         //播放信息
+        singer = intent.getStringExtra("singer");
+        song = intent.getStringExtra("song");
         if (action == Constant.PlayConstant.PLAY) {    //直接播放音乐
             play(0);
         } else if (action == Constant.PlayConstant.PLAY_PAUSE) {    //暂停
@@ -113,10 +119,8 @@ public class PlayService extends Service {
             stop();
         } else if (action == Constant.PlayConstant.PLAY_CONTINUE) { //继续播放
             resume();
-        } else if (action == Constant.PlayConstant.PLAY_PRIVIOUS) { //上一首
-//            previous();
         } else if (action == Constant.PlayConstant.PLAY_NEXT) {     //下一首
-//            next();
+            nextMusic(path, currentTime, singer, song);
         } else if (action == Constant.PlayConstant.PLAY_PROGRESS) {  //进度更新
             currentTime = intent.getIntExtra("progress", -1);
             play(currentTime);
@@ -161,9 +165,12 @@ public class PlayService extends Service {
     /**
      * 下一首
      */
-    private void nextMusic() {
+    private void nextMusic(String path, int currentTime, String singer, String song) {
         Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
-        sendIntent.putExtra("current", current);
+        sendIntent.putExtra("current", currentTime);
+        sendIntent.putExtra("path", path);
+        sendIntent.putExtra("singer", singer);
+        sendIntent.putExtra("song", song);
         // 发送广播，将被Activity组件中的BroadcastReceiver接收到
         sendBroadcast(sendIntent);
         play(0);
@@ -217,7 +224,7 @@ public class PlayService extends Service {
         }
     }
 
-    public class BroadcastReceiver extends android.content.BroadcastReceiver {
+    public class PlayServiceReceiver extends android.content.BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {

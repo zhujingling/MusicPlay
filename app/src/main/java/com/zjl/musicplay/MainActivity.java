@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zjl.constant.CommonManage;
@@ -25,13 +26,17 @@ import java.util.Random;
  * Created by Administrator on 2016/2/24.
  */
 public class MainActivity extends FragmentActivity {
-    private static ImageButton playBtn;//播放、暂停
+    private ImageButton playOrPause;//播放、暂停
+    private ImageButton playNext;//下一首
     private int listPosition = 0;   //标识列表位置
     private List<Music> musicList = null;
-    private BroadcastReceiver broadcastReceiver;
+    private MainActivityReceiver mainActivityReceiver;
     private String url; // 歌曲路径
     private int currentTime;//当前时间
     private FragmentMain fragmentMain;
+
+    private TextView tv_singer;
+    private TextView tv_song;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,22 +50,24 @@ public class MainActivity extends FragmentActivity {
 
 
     private void initComponent() {
-        playBtn = (ImageButton) findViewById(R.id.play_pause);
-        broadcastReceiver = new BroadcastReceiver();
+        playOrPause = (ImageButton) findViewById(R.id.play_pause);
+        playNext = (ImageButton) findViewById(R.id.play_next);
+        tv_singer = (TextView) findViewById(R.id.bottom_singer);
+        tv_song = (TextView) findViewById(R.id.bottom_song_name);
+        mainActivityReceiver = new MainActivityReceiver();
         musicList = CommonManage.getCommoManage().musicList;
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Constant.BrocastConstant.UPDATE_ACTION);
         filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
         filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
-        registerReceiver(broadcastReceiver, filter);
+        registerReceiver(mainActivityReceiver, filter);
     }
 
     //注册一些事件
-    private void initEvents(){
-        playBtn.setOnClickListener(new onClick());
-
-
+    private void initEvents() {
+        playOrPause.setOnClickListener(new initEvents());
+        playNext.setOnClickListener(new initEvents());
     }
+
     /**
      */
     private void fragmentView() {
@@ -75,31 +82,35 @@ public class MainActivity extends FragmentActivity {
         fragmentTransaction.commit();
     }
 
-    private class onClick implements View.OnClickListener {
+    private class initEvents implements View.OnClickListener {
         Intent intent;
+
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.play_pause:
-                    intent=new Intent(MainActivity.this, PlayService.class);
+                    intent = new Intent(MainActivity.this, PlayService.class);
                     playOrPause(intent);//暂停播放
                     break;
-                case R.id.paly_music:
+                case R.id.play_music:
                     playMusic(getRandomMusicPosition());
+                    break;
+                case R.id.play_next:
+                    nextMusic();
                     break;
             }
         }
 
         private void playOrPause(Intent intent) {
             if (CommonManage.getCommoManage().isPlaying) {
-                playBtn.setBackgroundResource(R.drawable.play_pause);
+                playOrPause.setBackgroundResource(R.drawable.play_pause);
                 intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);//在服务里面注册这个监听器，然后就发到服务里面去了
                 intent.putExtra("action", Constant.PlayConstant.PLAY_PAUSE);
                 startService(intent);
                 CommonManage.getCommoManage().isPlaying = false;
                 CommonManage.getCommoManage().isPause = true;
             } else if (CommonManage.getCommoManage().isPause) {
-                playBtn.setBackgroundResource(R.drawable.playing);
+                playOrPause.setBackgroundResource(R.drawable.playing);
                 intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
                 intent.putExtra("action", Constant.PlayConstant.PLAY_CONTINUE);
                 startService(intent);
@@ -111,13 +122,15 @@ public class MainActivity extends FragmentActivity {
 
 
     public void playMusic(int listPosition) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(MainActivity.this, PlayService.class);
         intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
         intent.putExtra("url", musicList.get(listPosition).getUrl());
         intent.putExtra("listPosition", listPosition);
         intent.putExtra("action", Constant.PlayConstant.PLAY);
+        intent.putExtra("singer", musicList.get(listPosition).getArtist());
+        intent.putExtra("song", musicList.get(listPosition).getTitle());
         startService(intent);
-        CommonManage.getCommoManage().isPlaying=true;
+        CommonManage.getCommoManage().isPlaying = true;
     }
 
     /**
@@ -127,11 +140,12 @@ public class MainActivity extends FragmentActivity {
         listPosition = listPosition + 1;
         if (listPosition <= musicList.size() - 1) {
             Music music = musicList.get(listPosition);
-
-            Intent intent = new Intent();
-            intent.setAction("com.wwj.media.MUSIC_SERVICE");
+            Intent intent = new Intent(MainActivity.this, PlayService.class);
+            intent.putExtra("action", Constant.PlayConstant.PLAY_NEXT);
             intent.putExtra("listPosition", listPosition);
             intent.putExtra("url", music.getUrl());
+            intent.putExtra("singer", musicList.get(listPosition).getArtist());
+            intent.putExtra("song", musicList.get(listPosition).getTitle());
             startService(intent);
         } else {
             Toast.makeText(this, "没有下一首了", Toast.LENGTH_SHORT).show();
@@ -144,14 +158,20 @@ public class MainActivity extends FragmentActivity {
      *
      * @author wwj
      */
-    public class BroadcastReceiver extends android.content.BroadcastReceiver {
+    public class MainActivityReceiver extends android.content.BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Constant.BrocastConstant.MUSIC_CURRENT.equals(action)) {
-                currentTime = intent.getIntExtra("currentTime", -1);
-                playBtn.setBackgroundResource(R.drawable.playing);
+                try {
+                    currentTime = intent.getIntExtra("currentTime", -1);
+                    playOrPause.setBackgroundResource(R.drawable.playing);
+                    tv_song.setText(intent.getStringExtra("song"));
+                    tv_singer.setText(intent.getStringExtra("singer"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             } else if (Constant.BrocastConstant.MUSIC_DURATION.equals(action)) {
                 int duration = intent.getIntExtra("duration", -1);
@@ -164,7 +184,7 @@ public class MainActivity extends FragmentActivity {
 
                 }
                 if (listPosition == 0) {
-                    playBtn.setBackgroundResource(R.drawable.play_pause);
+                    playOrPause.setBackgroundResource(R.drawable.play_pause);
                     CommonManage.getCommoManage().isPause = true;
                 }
             }
@@ -173,7 +193,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     //生成一个随机数
-    private int getRandomMusicPosition(){
+    private int getRandomMusicPosition() {
         return new Random().nextInt(musicList.size());
     }
 

@@ -63,7 +63,7 @@
                     android:layout_height="fill_parent">
 
                     <TextView
-                        android:id="@+id/bottom_singer"
+                        android:id="@+id/local_music"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -73,17 +73,17 @@
                         android:textSize="18dp" />
 
                     <TextView
-                        android:id="@+id/bottom_song_name"
+                        android:id="@+id/song_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/bottom_singer"
+                        android:layout_alignLeft="@+id/local_music"
                         android:layout_alignParentBottom="true"
                         android:layout_marginBottom="5dp"
-                        android:text="30首" />
+                        android:text="0首" />
                 </RelativeLayout>
 
                 <ImageView
-                    android:id="@+id/paly_music"
+                    android:id="@+id/play_music"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
