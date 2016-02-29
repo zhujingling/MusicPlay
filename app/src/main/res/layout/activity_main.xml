@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
+                android:layout_alignTop="@+id/play_pause"
                 android:layout_marginRight="40dp"
                 android:background="@drawable/play_next" />
 
@@ -47,7 +47,7 @@
                 android:id="@+id/play_pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:layout_alignTop="@+id/bottom_song_name"
                 android:layout_marginRight="20dp"
                 android:layout_toLeftOf="@+id/play_next"
                 android:background="@drawable/play_pause" />
@@ -59,7 +59,7 @@
                 android:layout_alignTop="@+id/bottom_header"
                 android:layout_toRightOf="@+id/bottom_header"
                 android:max="100"
-                android:progress="50"
+                android:progress="0"
                 android:secondaryProgress="100" />
 
             <TextView
@@ -69,8 +69,8 @@
                 android:layout_below="@+id/seek_bar"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/bottom_header"
-                android:textColor="#000000"
-                android:text="歌名" />
+                android:text="歌名"
+                android:textColor="#000000" />
 
             <TextView
                 android:id="@+id/bottom_singer"
@@ -78,8 +78,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/bottom_song_name"
                 android:layout_below="@+id/bottom_song_name"
-                android:textSize="12dp"
-                android:text="歌手名称" />
+                android:text="歌手名称"
+                android:textSize="12dp" />
             <!--</FrameLayout>-->
         </RelativeLayout>
     </FrameLayout>

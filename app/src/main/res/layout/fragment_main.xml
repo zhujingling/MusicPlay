@@ -6,13 +6,23 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/music"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -26,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:background="#272727">
 
-                <TextView
+                <EditText
                     android:id="@+id/input_song"
                     android:layout_width="fill_parent"
                     android:layout_height="40dp"
@@ -58,7 +68,7 @@
                 android:layout_height="60dp">
 
                 <RelativeLayout
-                    android:id="@+id/jump_local_music"
+                    android:id="@+id/fragment_music"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent">
 
@@ -267,7 +277,7 @@
                     android:id="@+id/tv_more"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:drawableLeft="@drawable/more"
+                    android:drawableLeft="@drawable/menu_more"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:text="更多" />

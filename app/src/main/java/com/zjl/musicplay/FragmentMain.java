@@ -46,9 +46,8 @@ public class FragmentMain extends Fragment {
        try{
            play_music = (ImageView) view.findViewById(R.id.play_music);
            tv_love = (TextView) view.findViewById(R.id.tv_love);
-           jump_local_music = (RelativeLayout) view.findViewById(R.id.jump_local_music);
+           jump_local_music = (RelativeLayout) view.findViewById(R.id.fragment_music);
            song_count = (TextView) view.findViewById(R.id.song_count);
-
            song_count.setText(Integer.toString(CommonManage.getCommoManage().musicList.size())+"首");
        }catch (Exception e){
            e.printStackTrace();
@@ -66,7 +65,7 @@ public class FragmentMain extends Fragment {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.jump_local_music:
+                case R.id.fragment_music:
                     fragmentMusicListView();
                     break;
                 case R.id.play_music:
@@ -85,7 +84,6 @@ public class FragmentMain extends Fragment {
 
     public void playMusic(int listPosition) {
         Intent intent = new Intent(getActivity(), PlayService.class);
-        intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
         intent.putExtra("url", CommonManage.getCommoManage().musicList.get(listPosition).getUrl());
         intent.putExtra("listPosition", listPosition);
         intent.putExtra("action", Constant.PlayConstant.PLAY);

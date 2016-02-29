@@ -44,6 +44,7 @@ public class PlayService extends Service {
                 Intent intent = new Intent();
                 intent.setAction(Constant.BrocastConstant.MUSIC_CURRENT);
                 intent.putExtra("currentTime", currentTime);
+                intent.putExtra("seekBarProgress", currentTime * 1000 / duration);
                 intent.putExtra("singer", singer);
                 intent.putExtra("song", song);
                 sendBroadcast(intent);
@@ -63,16 +64,17 @@ public class PlayService extends Service {
                 if (status == 3) { // 顺序播放
                     current++;  //下一首位置
                     if (current <= musicList.size() - 1) {
-                        Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
+                        Intent sendIntent = new Intent();
                         sendIntent.putExtra("current", current);
-                        // 发送广播，将被Activity组件中的BroadcastReceiver接收到
+                        // 发送广播，将被Activity（注册了这一Intent动作）组件中的BroadcastReceiver接收到
                         sendBroadcast(sendIntent);
                         path = musicList.get(current).getUrl();
+                        duration = (int) musicList.get(current).getDuration();
                         play(0);
                     } else {
                         mp.seekTo(0);
                         current = 0;
-                        Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
+                        Intent sendIntent = new Intent();
                         sendIntent.putExtra("current", current);
                         // 发送广播，将被Activity组件中的BroadcastReceiver接收到
                         sendBroadcast(sendIntent);
@@ -84,11 +86,7 @@ public class PlayService extends Service {
 
         playServiceReceiver = new PlayServiceReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Constant.BrocastConstant.UPDATE_ACTION);
         filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
-        filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
-        filter.addAction(Constant.BrocastConstant.CTL_ACTION);
-        filter.addAction(Constant.BrocastConstant.MUSIC_SERVICE);
         registerReceiver(playServiceReceiver, filter);
 
     }
@@ -120,7 +118,7 @@ public class PlayService extends Service {
         } else if (action == Constant.PlayConstant.PLAY_CONTINUE) { //继续播放
             resume();
         } else if (action == Constant.PlayConstant.PLAY_NEXT) {     //下一首
-            nextMusic(path, currentTime, singer, song);
+            nextMusic(path, 0, singer, song);
         } else if (action == Constant.PlayConstant.PLAY_PROGRESS) {  //进度更新
             currentTime = intent.getIntExtra("progress", -1);
             play(currentTime);
@@ -166,7 +164,7 @@ public class PlayService extends Service {
      * 下一首
      */
     private void nextMusic(String path, int currentTime, String singer, String song) {
-        Intent sendIntent = new Intent(Constant.BrocastConstant.UPDATE_ACTION);
+        Intent sendIntent = new Intent();
         sendIntent.putExtra("current", currentTime);
         sendIntent.putExtra("path", path);
         sendIntent.putExtra("singer", singer);
@@ -217,7 +215,6 @@ public class PlayService extends Service {
                 mp.seekTo(currentTime);
             }
             Intent intent = new Intent();
-            intent.setAction(Constant.BrocastConstant.MUSIC_DURATION);
             duration = mediaPlayer.getDuration();
             intent.putExtra("duration", duration);  //通过Intent来传递歌曲的总长度
             sendBroadcast(intent);

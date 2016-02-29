@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +40,17 @@ public class MainActivity extends FragmentActivity {
 
     private TextView tv_singer;
     private TextView tv_song;
+    private SeekBar seekBar;
+    private int seekBarProgress;//当前时间
+
+    private Handler m_handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what==1){
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +68,12 @@ public class MainActivity extends FragmentActivity {
         playNext = (ImageButton) findViewById(R.id.play_next);
         tv_singer = (TextView) findViewById(R.id.bottom_singer);
         tv_song = (TextView) findViewById(R.id.bottom_song_name);
+
+        seekBar = (SeekBar) findViewById(R.id.seek_bar);
         mainActivityReceiver = new MainActivityReceiver();
         musicList = CommonManage.getCommoManage().musicList;
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
-        filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
         registerReceiver(mainActivityReceiver, filter);
     }
 
@@ -104,14 +119,12 @@ public class MainActivity extends FragmentActivity {
         private void playOrPause(Intent intent) {
             if (CommonManage.getCommoManage().isPlaying) {
                 playOrPause.setBackgroundResource(R.drawable.play_pause);
-                intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);//在服务里面注册这个监听器，然后就发到服务里面去了
                 intent.putExtra("action", Constant.PlayConstant.PLAY_PAUSE);
                 startService(intent);
                 CommonManage.getCommoManage().isPlaying = false;
                 CommonManage.getCommoManage().isPause = true;
             } else if (CommonManage.getCommoManage().isPause) {
                 playOrPause.setBackgroundResource(R.drawable.playing);
-                intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
                 intent.putExtra("action", Constant.PlayConstant.PLAY_CONTINUE);
                 startService(intent);
                 CommonManage.getCommoManage().isPause = false;
@@ -123,7 +136,6 @@ public class MainActivity extends FragmentActivity {
 
     public void playMusic(int listPosition) {
         Intent intent = new Intent(MainActivity.this, PlayService.class);
-        intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
         intent.putExtra("url", musicList.get(listPosition).getUrl());
         intent.putExtra("listPosition", listPosition);
         intent.putExtra("action", Constant.PlayConstant.PLAY);
@@ -166,26 +178,13 @@ public class MainActivity extends FragmentActivity {
             if (Constant.BrocastConstant.MUSIC_CURRENT.equals(action)) {
                 try {
                     currentTime = intent.getIntExtra("currentTime", -1);
+                    seekBarProgress = intent.getIntExtra("seekBarProgress", 0);
                     playOrPause.setBackgroundResource(R.drawable.playing);
                     tv_song.setText(intent.getStringExtra("song"));
                     tv_singer.setText(intent.getStringExtra("singer"));
+                    seekBar.setProgress(seekBarProgress);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-
-            } else if (Constant.BrocastConstant.MUSIC_DURATION.equals(action)) {
-                int duration = intent.getIntExtra("duration", -1);
-
-            } else if (Constant.BrocastConstant.UPDATE_ACTION.equals(action)) {
-                //获取Intent中的current消息，current代表当前正在播放的歌曲
-                listPosition = intent.getIntExtra("current", -1);
-                url = musicList.get(listPosition).getUrl();
-                if (listPosition >= 0) {
-
-                }
-                if (listPosition == 0) {
-                    playOrPause.setBackgroundResource(R.drawable.play_pause);
-                    CommonManage.getCommoManage().isPause = true;
                 }
             }
         }

@@ -1,12 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <!-- Customize your theme here. -->
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     </style>
 
 
@@ -14,12 +9,21 @@
         <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
     </style>
 
-    <style name="Theme.ToolBar.Music" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="actionOverflowButtonStyle">@style/ActionButton.Overflow.Music</item>
+    <style name="Theme.ToolBar.Music" parent="Theme.Music">
+        <!-- API 14 theme customizations can go here. -->
+        <item name="actionOverflowMenuStyle">@style/AppBaseActionOverflowMenuStyle</item>
+        <item name="actionOverflowButtonStyle">@style/ActionButtonOverflowMusic</item>
+    </style>
+    <style name="AppBaseActionOverflowMenuStyle" parent="@style/Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">-3dip</item>
+        <item name="android:textColorPrimary">@color/material_blue_grey_900</item>
+        <item name="actionMenuTextColor">@color/material_blue_grey_900</item>
     </style>
 
-    <style name="ActionButton.Overflow.Music" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="android:src">@drawable/local_help</item>
+    <style name="ActionButtonOverflowMusic" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/menu_more</item>
     </style>
+
 
 </resources>

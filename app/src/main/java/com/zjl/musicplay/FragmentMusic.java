@@ -117,11 +117,10 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
                                 PixelFormat.TRANSLUCENT));
 
         listMusicInfos = CommonManage.getCommoManage().musicList;
-        fragmentMusicReceiver =new FragmentMusicReceiver();
+        fragmentMusicReceiver = new FragmentMusicReceiver();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constant.BrocastConstant.MUSIC_CURRENT);
-        filter.addAction(Constant.BrocastConstant.MUSIC_DURATION);
         getActivity().registerReceiver(fragmentMusicReceiver, filter);
     }
 
@@ -210,7 +209,6 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
 
     public void play() {
         Intent intent = new Intent(getActivity(), PlayService.class);
-        intent.setAction(Constant.BrocastConstant.MUSIC_SERVICE);
         intent.putExtra("url", listMusicInfos.get(listPosition).getUrl());
         intent.putExtra("listPosition", listPosition);
         intent.putExtra("action", Constant.PlayConstant.PLAY);
@@ -225,17 +223,6 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
             String action = intent.getAction();
             if (Constant.BrocastConstant.MUSIC_CURRENT.equals(action)) {
                 currentTime = intent.getIntExtra("currentTime", -1);
-            } else if (Constant.BrocastConstant.MUSIC_DURATION.equals(action)) {
-                int duration = intent.getIntExtra("duration", -1);
-            } else if (Constant.BrocastConstant.UPDATE_ACTION.equals(action)) {
-                //获取Intent中的current消息，current代表当前正在播放的歌曲
-                listPosition = intent.getIntExtra("current", -1);
-                url = listMusicInfos.get(listPosition).getUrl();
-                if (listPosition >= 0) {
-
-                }
-                if (listPosition == 0) {
-                }
             }
         }
     }

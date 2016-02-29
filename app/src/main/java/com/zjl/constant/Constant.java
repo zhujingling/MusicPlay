@@ -28,14 +28,6 @@ public class Constant {
 
 
     public final static class BrocastConstant {
-        public static final String UPDATE_ACTION = "com.zjl.action.UPDATE_ACTION";  //更新动作
-        public static final String CTL_ACTION = "com.zjl.action.CTL_ACTION";        //控制动作
-        public static final String MUSIC_CURRENT = "com.zjl.action.MUSIC_CURRENT";  //音乐当前时间改变动作
-        public static final String MUSIC_DURATION = "com.zjl.action.MUSIC_DURATION";//音乐播放长度改变动作
-        public static final String MUSIC_PLAYING = "com.zjl.action.MUSIC_PLAYING";  //音乐正在播放动作
-        public static final String REPEAT_ACTION = "com.zjl.action.REPEAT_ACTION";  //音乐重复播放动作
-        public static final String SHUFFLE_ACTION = "com.zjl.action.SHUFFLE_ACTION";//音乐随机播放动作
-
-        public static final String MUSIC_SERVICE = "com.zjl.action.MUSIC_SERVICE";//音乐随机播放动作
+        public static final String MUSIC_CURRENT = "com.zjl.action.music.current";  //音乐当前时间改变动作
     }
 }
