@@ -277,7 +277,7 @@
                     android:id="@+id/tv_more"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:drawableLeft="@drawable/menu_more"
+                    android:drawableLeft="@drawable/more"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:text="更多" />
