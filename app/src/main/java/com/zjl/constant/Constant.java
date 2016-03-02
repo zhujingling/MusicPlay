@@ -29,5 +29,6 @@ public class Constant {
 
     public final static class BrocastConstant {
         public static final String MUSIC_CURRENT = "com.zjl.action.music.current";  //音乐当前时间改变动作
+        public static final String MUSIC_PAUSE = "com.zjl.action.music.pause";  //音乐当前时间改变动作
     }
 }

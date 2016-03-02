@@ -34,8 +34,6 @@ public class MainActivity extends FragmentActivity {
     private int listPosition = 0;   //标识列表位置
     private List<Music> musicList = null;
     private MainActivityReceiver mainActivityReceiver;
-    private String url; // 歌曲路径
-    private int currentTime;//当前时间
     private FragmentMain fragmentMain;
 
     private TextView tv_singer;
@@ -43,10 +41,15 @@ public class MainActivity extends FragmentActivity {
     private SeekBar seekBar;
     private int seekBarProgress;//当前时间
 
-    private Handler m_handler=new Handler(){
+    private String strSinger;
+    private String strSong;
+    private long duration;
+    private int currentTime;
+
+    private Handler m_handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what==1){
+            if (msg.what == 1) {
 
             }
         }
@@ -120,12 +123,22 @@ public class MainActivity extends FragmentActivity {
             if (CommonManage.getCommoManage().isPlaying) {
                 playOrPause.setBackgroundResource(R.drawable.play_pause);
                 intent.putExtra("action", Constant.PlayConstant.PLAY_PAUSE);
+                intent.putExtra("url", musicList.get(listPosition).getUrl());
+                intent.putExtra("listPosition", listPosition);
+                intent.putExtra("singer", strSinger);
+                intent.putExtra("song", strSong);
+                intent.putExtra("duration", musicList.get(listPosition).getDuration());
                 startService(intent);
                 CommonManage.getCommoManage().isPlaying = false;
                 CommonManage.getCommoManage().isPause = true;
             } else if (CommonManage.getCommoManage().isPause) {
                 playOrPause.setBackgroundResource(R.drawable.playing);
                 intent.putExtra("action", Constant.PlayConstant.PLAY_CONTINUE);
+                intent.putExtra("url", musicList.get(listPosition).getUrl());
+                intent.putExtra("listPosition", listPosition);
+                intent.putExtra("singer", strSinger);
+                intent.putExtra("song", strSong);
+                intent.putExtra("duration", musicList.get(listPosition).getDuration());
                 startService(intent);
                 CommonManage.getCommoManage().isPause = false;
                 CommonManage.getCommoManage().isPlaying = true;
@@ -158,6 +171,7 @@ public class MainActivity extends FragmentActivity {
             intent.putExtra("url", music.getUrl());
             intent.putExtra("singer", musicList.get(listPosition).getArtist());
             intent.putExtra("song", musicList.get(listPosition).getTitle());
+            intent.putExtra("duration", musicList.get(listPosition).getDuration());
             startService(intent);
         } else {
             Toast.makeText(this, "没有下一首了", Toast.LENGTH_SHORT).show();
@@ -179,9 +193,17 @@ public class MainActivity extends FragmentActivity {
                 try {
                     currentTime = intent.getIntExtra("currentTime", -1);
                     seekBarProgress = intent.getIntExtra("seekBarProgress", 0);
-                    playOrPause.setBackgroundResource(R.drawable.playing);
-                    tv_song.setText(intent.getStringExtra("song"));
-                    tv_singer.setText(intent.getStringExtra("singer"));
+                    if (intent.getBooleanExtra("isPause", false)) {
+                        playOrPause.setBackgroundResource(R.drawable.play_pause);
+                    } else {
+                        playOrPause.setBackgroundResource(R.drawable.playing);
+                    }
+                    strSong = intent.getStringExtra("song");
+                    strSinger = intent.getStringExtra("singer");
+                    listPosition = intent.getIntExtra("listPosition", 0);
+                    tv_song.setText(strSong);
+                    tv_singer.setText(strSinger);
+
                     seekBar.setProgress(seekBarProgress);
                 } catch (Exception e) {
                     e.printStackTrace();

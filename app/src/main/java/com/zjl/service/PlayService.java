@@ -43,6 +43,8 @@ public class PlayService extends Service {
                 Intent intent = new Intent();
                 intent.setAction(Constant.BrocastConstant.MUSIC_CURRENT);
                 intent.putExtra("currentTime", currentTime);
+                intent.putExtra("listPosition",listMusicPosition);
+                intent.putExtra("isPause", isPause);
                 intent.putExtra("seekBarProgress", currentTime * 100 / duration);
                 intent.putExtra("singer", singer);
                 intent.putExtra("song", song);
@@ -65,7 +67,6 @@ public class PlayService extends Service {
                     if (listMusicPosition <= musicList.size() - 1) {
                         Intent sendIntent = new Intent();
                         sendIntent.putExtra("current", currentTime);
-                        // 发送广播，将被Activity（注册了这一Intent动作）组件中的BroadcastReceiver接收到
                         sendBroadcast(sendIntent);
                         path = musicList.get(listMusicPosition).getUrl();
                         duration = (int) musicList.get(listMusicPosition).getDuration();
