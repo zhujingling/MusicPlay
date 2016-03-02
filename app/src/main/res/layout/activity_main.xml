@@ -58,9 +58,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/bottom_header"
                 android:layout_toRightOf="@+id/bottom_header"
+                android:progressDrawable="@drawable/bg_bar"
+                android:layout_marginTop="5dp"
+                android:thumb="@drawable/thumb_bar"
                 android:max="100"
-                android:progress="0"
-                android:secondaryProgress="100" />
+                android:progress="0"/>
 
             <TextView
                 android:id="@+id/bottom_song_name"

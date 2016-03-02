@@ -20,7 +20,7 @@ import java.util.Random;
 /**
  * Created by Administrator on 2016/2/24.
  */
-public class FragmentMain extends Fragment {
+public class FragmentMain extends Fragment  {
 
     private FragmentMusic fragmentMusic;
     private TextView tv_love;
@@ -89,6 +89,7 @@ public class FragmentMain extends Fragment {
         intent.putExtra("action", Constant.PlayConstant.PLAY);
         intent.putExtra("singer", CommonManage.getCommoManage().musicList.get(listPosition).getArtist());
         intent.putExtra("song", CommonManage.getCommoManage().musicList.get(listPosition).getTitle());
+        intent.putExtra("duration", CommonManage.getCommoManage().musicList.get(listPosition).getDuration());
         getActivity().startService(intent);
         CommonManage.getCommoManage().isPlaying = true;
     }
