@@ -14,6 +14,7 @@
         android:id="@+id/frame_play"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:background="#00000000"
         android:layout_alignParentBottom="true">
 
         <RelativeLayout
@@ -58,9 +59,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/bottom_header"
                 android:layout_toRightOf="@+id/bottom_header"
-                android:progressDrawable="@drawable/bg_bar"
-                android:layout_marginTop="5dp"
-                android:thumb="@drawable/thumb_bar"
                 android:max="100"
                 android:progress="0"/>
 

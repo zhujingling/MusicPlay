@@ -50,7 +50,7 @@ public class PlayService extends Service {
                 intent.putExtra("isPause", isPause);
                 intent.putExtra("seekBarProgress", currentTime * 100 / duration);
                 intent.putExtra("singer", singer);
-                intent.putExtra("song", song);
+                intent.putExtra("songName", song);
                 sendBroadcast(intent);
                 handler.sendEmptyMessageDelayed(1, 1000);
             }
@@ -169,7 +169,7 @@ public class PlayService extends Service {
         sendIntent.putExtra("current", currentTime);
         sendIntent.putExtra("path", path);
         sendIntent.putExtra("singer", singer);
-        sendIntent.putExtra("song", song);
+        sendIntent.putExtra("songName", song);
         // 发送广播，将被Activity组件中的BroadcastReceiver接收到
         sendBroadcast(sendIntent);
         play(0);
@@ -232,7 +232,7 @@ public class PlayService extends Service {
         listPosition = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
         action = intent.getIntExtra("action", 0);         //播放信息
         singer = intent.getStringExtra("singer");
-        song = intent.getStringExtra("song");
+        song = intent.getStringExtra("songName");
         duration = (int) intent.getLongExtra("duration", -1);
 
         return intent;

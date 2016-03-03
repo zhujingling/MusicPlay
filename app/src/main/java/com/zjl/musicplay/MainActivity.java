@@ -1,6 +1,7 @@
 package com.zjl.musicplay;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -8,10 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +24,9 @@ import android.widget.Toast;
 import com.zjl.constant.CommonManage;
 import com.zjl.constant.Constant;
 import com.zjl.entity.Music;
+import com.zjl.fragmentchange.ISwitchFragment;
 import com.zjl.service.PlayService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,13 +34,15 @@ import java.util.Random;
 /**
  * Created by Administrator on 2016/2/24.
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements ISwitchFragment {
+    private Fragment fragment;
+    private FragmentMain fragmentMain;
+    private FragmentMusic fragmentMusic;
     private ImageButton playOrPause;//播放、暂停
     private ImageButton playNext;//下一首
     private int listPosition = 0;   //标识列表位置
     private List<Music> musicList = null;
     private MainActivityReceiver mainActivityReceiver;
-    private FragmentMain fragmentMain;
 
     private TextView singer;
     private TextView songName;
@@ -58,16 +67,16 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-     try{
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
-         getMusicInfos(this);
-         initComponent();
-         initEvents();
-         fragmentView();
-     } catch (Exception e){
-         e.printStackTrace();
-     }
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            getMusicInfos(this);
+            initComponent();
+            initEvents();
+            fragmentView();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -95,15 +104,53 @@ public class MainActivity extends FragmentActivity {
      */
     private void fragmentView() {
         // 实例化Fragment页面
-        fragmentMain = new FragmentMain();
+        if (fragmentMain == null) {
+            fragmentMain = FragmentMain.newInstance();
+        }
         // 得到Fragment事务管理器
         FragmentTransaction fragmentTransaction = this
                 .getSupportFragmentManager().beginTransaction();
         // 替换当前的页面
-        fragmentTransaction.replace(R.id.frame_content, fragmentMain);
+        fragmentTransaction.add(R.id.frame_content, fragmentMain);
         // 事务管理提交
         fragmentTransaction.commit();
     }
+
+    @Override
+    public void switchFragment(String tag) {
+        try {
+            if (tag.equals("tofragmentmusic")) {
+                fragmentMusic = FragmentMusic.newInstance();
+                // 得到Fragment事务管理器
+                android.support.v4.app.FragmentTransaction fragmentTransaction = this
+                        .getSupportFragmentManager().beginTransaction();
+                // 替换当前的页面
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.push_left_in,
+                        R.anim.push_left_out);
+                fragmentTransaction.add(R.id.frame_content, fragmentMusic);
+                fragmentTransaction.addToBackStack(null);
+                // 事务管理提交
+                fragmentTransaction.commit();
+            } else if (tag.equals("tofragmentmain")) {
+
+                fragmentMain = FragmentMain.newInstance();
+                // 得到Fragment事务管理器
+                android.support.v4.app.FragmentTransaction fragmentTransaction = this
+                        .getSupportFragmentManager().beginTransaction();
+                // 替换当前的页面
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.push_right_in,
+                        R.anim.push_right_out);
+                fragmentTransaction.add(R.id.frame_content, fragmentMain);
+                // 事务管理提交
+                fragmentTransaction.commit();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private class initEvents implements View.OnClickListener {
         Intent intent;
@@ -133,7 +180,7 @@ public class MainActivity extends FragmentActivity {
                 CommonManage.getCommoManage().isPause = true;
             } else if (CommonManage.getCommoManage().isPause) {
                 playOrPause.setBackgroundResource(R.drawable.playing);
-                setIntentExtra(intent, Constant.PlayConstant.PLAY, listPosition);
+                setIntentExtra(intent, Constant.PlayConstant.PLAY_CONTINUE, listPosition);
                 startService(intent);
                 CommonManage.getCommoManage().isPause = false;
                 CommonManage.getCommoManage().isPlaying = true;
@@ -202,7 +249,7 @@ public class MainActivity extends FragmentActivity {
         listPosition = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
         action = intent.getIntExtra("action", 0);         //播放信息
         strSinger = intent.getStringExtra("singer");
-        strSongName = intent.getStringExtra("song");
+        strSongName = intent.getStringExtra("songName");
         seekBarProgress = intent.getIntExtra("seekBarProgress", 0);
         duration = intent.getLongExtra("duration", -1);
 
@@ -224,6 +271,46 @@ public class MainActivity extends FragmentActivity {
     //生成一个随机数
     private int getRandomMusicPosition() {
         return new Random().nextInt(musicList.size());
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(R.anim.push_right_in,
+                R.anim.push_right_out);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (fragment instanceof FragmentMain) {
+            FragmentMain.onKeyDown(keyCode, event);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void existApplication() {
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("提醒")
+                .setMessage("是否退出程序")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+
+                }).setNegativeButton("取消",
+
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        }).create(); // 创建对话框
+        alertDialog.show(); // 显示对话框
     }
 
     private void getMusicInfos(Context context) {
@@ -290,4 +377,6 @@ public class MainActivity extends FragmentActivity {
         }
         CommonManage.getCommoManage().musicList = musicsInfos;
     }
+
+
 }

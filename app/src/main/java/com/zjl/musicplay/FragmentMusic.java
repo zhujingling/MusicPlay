@@ -26,6 +26,7 @@ import com.zjl.component.LettersSideBarView;
 import com.zjl.constant.CommonManage;
 import com.zjl.constant.Constant;
 import com.zjl.entity.Music;
+import com.zjl.fragmentchange.ISwitchFragment;
 import com.zjl.service.PlayService;
 import com.zjl.util.Sort;
 
@@ -37,6 +38,7 @@ import java.util.List;
  */
 public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouchingLetterChangedListener {
 
+    private ISwitchFragment switchFragment;
     private FragmentMain fragmentMain;
     private MusicListViewAdapter musicListViewAdapter;
     private Sort mSort;
@@ -55,11 +57,22 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     private String url;
     private FragmentMusicReceiver fragmentMusicReceiver;
 
+    public static FragmentMusic newInstance() {
+        FragmentMusic fragment = new FragmentMusic();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
-            View view = inflater.inflate(R.layout.fragment_music, null);
+//            View view = inflater.inflate(R.layout.fragment_music, null);
+            View view = null;
+            if (view == null) {
+                view = inflater.inflate(R.layout.fragment_music, container, false);
+            }
             initComponent(view);
             initAdapter();
 
@@ -148,22 +161,8 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     /**
      */
     private void fragmentMainView() {
-        // 实例化Fragment页面
-        fragmentMain = new FragmentMain();
-        // 得到Fragment事务管理器
-        FragmentTransaction fragmentTransaction = getActivity()
-                .getSupportFragmentManager().beginTransaction();
-        // 替换当前的页面
-        fragmentTransaction.setCustomAnimations(
-                R.anim.push_right_in,
-                R.anim.push_right_out);
-
-        fragmentTransaction.replace(R.id.frame_content, fragmentMain);
-        fragmentTransaction.addToBackStack(null);
-
-        // 事务管理提交
-        fragmentTransaction.commit();
-
+        switchFragment = (ISwitchFragment) getActivity();
+        switchFragment.switchFragment("tofragmentmain");
     }
 
     private class initEvents implements View.OnClickListener, View.OnTouchListener, Toolbar.OnMenuItemClickListener, ListView.OnItemClickListener {
@@ -205,7 +204,6 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
             play();
         }
     }
-
 
     public void play() {
         Intent intent = new Intent(getActivity(), PlayService.class);
