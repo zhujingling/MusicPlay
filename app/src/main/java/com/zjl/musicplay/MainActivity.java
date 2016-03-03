@@ -20,7 +20,6 @@ import com.zjl.constant.CommonManage;
 import com.zjl.constant.Constant;
 import com.zjl.entity.Music;
 import com.zjl.service.PlayService;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,15 +35,17 @@ public class MainActivity extends FragmentActivity {
     private MainActivityReceiver mainActivityReceiver;
     private FragmentMain fragmentMain;
 
-    private TextView tv_singer;
-    private TextView tv_song;
+    private TextView singer;
+    private TextView songName;
     private SeekBar seekBar;
-    private int seekBarProgress;//当前时间
 
-    private String strSinger;
-    private String strSong;
+
+    private String strSinger;//参数歌手
+    private String strSongName;
+    private int seekBarProgress;
+    private int action;
     private long duration;
-    private int currentTime;
+
 
     private Handler m_handler = new Handler() {
         @Override
@@ -57,20 +58,24 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        getMusicInfos(this);
-        initComponent();
-        initEvents();
-        fragmentView();
+     try{
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+         getMusicInfos(this);
+         initComponent();
+         initEvents();
+         fragmentView();
+     } catch (Exception e){
+         e.printStackTrace();
+     }
     }
 
 
     private void initComponent() {
         playOrPause = (ImageButton) findViewById(R.id.play_pause);
         playNext = (ImageButton) findViewById(R.id.play_next);
-        tv_singer = (TextView) findViewById(R.id.bottom_singer);
-        tv_song = (TextView) findViewById(R.id.bottom_song_name);
+        singer = (TextView) findViewById(R.id.singer);
+        songName = (TextView) findViewById(R.id.song_name);
 
         seekBar = (SeekBar) findViewById(R.id.seek_bar);
         mainActivityReceiver = new MainActivityReceiver();
@@ -122,23 +127,13 @@ public class MainActivity extends FragmentActivity {
         private void playOrPause(Intent intent) {
             if (CommonManage.getCommoManage().isPlaying) {
                 playOrPause.setBackgroundResource(R.drawable.play_pause);
-                intent.putExtra("action", Constant.PlayConstant.PLAY_PAUSE);
-                intent.putExtra("url", musicList.get(listPosition).getUrl());
-                intent.putExtra("listPosition", listPosition);
-                intent.putExtra("singer", strSinger);
-                intent.putExtra("song", strSong);
-                intent.putExtra("duration", musicList.get(listPosition).getDuration());
+                setIntentExtra(intent, Constant.PlayConstant.PLAY_PAUSE, listPosition);
                 startService(intent);
                 CommonManage.getCommoManage().isPlaying = false;
                 CommonManage.getCommoManage().isPause = true;
             } else if (CommonManage.getCommoManage().isPause) {
                 playOrPause.setBackgroundResource(R.drawable.playing);
-                intent.putExtra("action", Constant.PlayConstant.PLAY_CONTINUE);
-                intent.putExtra("url", musicList.get(listPosition).getUrl());
-                intent.putExtra("listPosition", listPosition);
-                intent.putExtra("singer", strSinger);
-                intent.putExtra("song", strSong);
-                intent.putExtra("duration", musicList.get(listPosition).getDuration());
+                setIntentExtra(intent, Constant.PlayConstant.PLAY, listPosition);
                 startService(intent);
                 CommonManage.getCommoManage().isPause = false;
                 CommonManage.getCommoManage().isPlaying = true;
@@ -149,11 +144,7 @@ public class MainActivity extends FragmentActivity {
 
     public void playMusic(int listPosition) {
         Intent intent = new Intent(MainActivity.this, PlayService.class);
-        intent.putExtra("url", musicList.get(listPosition).getUrl());
-        intent.putExtra("listPosition", listPosition);
-        intent.putExtra("action", Constant.PlayConstant.PLAY);
-        intent.putExtra("singer", musicList.get(listPosition).getArtist());
-        intent.putExtra("song", musicList.get(listPosition).getTitle());
+        setIntentExtra(intent, Constant.PlayConstant.PLAY, listPosition);
         startService(intent);
         CommonManage.getCommoManage().isPlaying = true;
     }
@@ -164,14 +155,8 @@ public class MainActivity extends FragmentActivity {
     public void nextMusic() {
         listPosition = listPosition + 1;
         if (listPosition <= musicList.size() - 1) {
-            Music music = musicList.get(listPosition);
             Intent intent = new Intent(MainActivity.this, PlayService.class);
-            intent.putExtra("action", Constant.PlayConstant.PLAY_NEXT);
-            intent.putExtra("listPosition", listPosition);
-            intent.putExtra("url", music.getUrl());
-            intent.putExtra("singer", musicList.get(listPosition).getArtist());
-            intent.putExtra("song", musicList.get(listPosition).getTitle());
-            intent.putExtra("duration", musicList.get(listPosition).getDuration());
+            setIntentExtra(intent, Constant.PlayConstant.PLAY_NEXT, listPosition);
             startService(intent);
         } else {
             Toast.makeText(this, "没有下一首了", Toast.LENGTH_SHORT).show();
@@ -191,26 +176,49 @@ public class MainActivity extends FragmentActivity {
             String action = intent.getAction();
             if (Constant.BrocastConstant.MUSIC_CURRENT.equals(action)) {
                 try {
-                    currentTime = intent.getIntExtra("currentTime", -1);
-                    seekBarProgress = intent.getIntExtra("seekBarProgress", 0);
-                    if (intent.getBooleanExtra("isPause", false)) {
-                        playOrPause.setBackgroundResource(R.drawable.play_pause);
-                    } else {
-                        playOrPause.setBackgroundResource(R.drawable.playing);
-                    }
-                    strSong = intent.getStringExtra("song");
-                    strSinger = intent.getStringExtra("singer");
-                    listPosition = intent.getIntExtra("listPosition", 0);
-                    tv_song.setText(strSong);
-                    tv_singer.setText(strSinger);
-
-                    seekBar.setProgress(seekBarProgress);
+                    setPlayOrPauseBackgroundResource(intent.getBooleanExtra("isPause", false));
+                    getIntentExtra(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
 
+    }
+
+
+    private Intent setIntentExtra(Intent intent, int action, int listPosition) {
+        intent.putExtra("action", action);
+        intent.putExtra("url", musicList.get(listPosition).getUrl());
+        intent.putExtra("listPosition", listPosition);
+        intent.putExtra("singer", musicList.get(listPosition).getArtist());
+        intent.putExtra("songName", musicList.get(listPosition).getTitle());
+        intent.putExtra("duration", musicList.get(listPosition).getDuration());
+        return intent;
+    }
+
+
+    private Intent getIntentExtra(Intent intent) {
+        listPosition = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
+        action = intent.getIntExtra("action", 0);         //播放信息
+        strSinger = intent.getStringExtra("singer");
+        strSongName = intent.getStringExtra("song");
+        seekBarProgress = intent.getIntExtra("seekBarProgress", 0);
+        duration = intent.getLongExtra("duration", -1);
+
+        singer.setText(strSinger);
+        songName.setText(strSongName);
+        seekBar.setProgress(seekBarProgress);
+
+        return intent;
+    }
+
+    private void setPlayOrPauseBackgroundResource(boolean isPause) {
+        if (isPause) {
+            playOrPause.setBackgroundResource(R.drawable.play_pause);
+        } else {
+            playOrPause.setBackgroundResource(R.drawable.playing);
+        }
     }
 
     //生成一个随机数

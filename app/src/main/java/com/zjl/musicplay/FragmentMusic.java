@@ -98,7 +98,7 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     }
 
     private void initComponent(View view) {
-        musicListView = (ListView) view.findViewById(R.id.local_music_list);
+        musicListView = (ListView) view.findViewById(R.id.music_list);
         lettersSideBarView = (LettersSideBarView) view.findViewById(R.id.letter_sidebar);
         mTagIcon = (TextView) this.getActivity().getLayoutInflater().inflate(R.layout.music_tag_icon, null);
 
@@ -177,7 +177,7 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
         public boolean onTouch(View v, MotionEvent event) {
             boolean flag = false;
             switch (v.getId()) {
-                case R.id.local_music_list:
+                case R.id.music_list:
                     flag = false;
                     break;
             }
@@ -209,10 +209,19 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
 
     public void play() {
         Intent intent = new Intent(getActivity(), PlayService.class);
+        setIntentExtra(intent, Constant.PlayConstant.PLAY, listPosition);
+        getActivity().startService(intent);
+    }
+
+
+    private Intent setIntentExtra(Intent intent, int action, int listPosition) {
+        intent.putExtra("action", action);
         intent.putExtra("url", listMusicInfos.get(listPosition).getUrl());
         intent.putExtra("listPosition", listPosition);
-        intent.putExtra("action", Constant.PlayConstant.PLAY);
-        getActivity().startService(intent);
+        intent.putExtra("singer", listMusicInfos.get(listPosition).getArtist());
+        intent.putExtra("songName", listMusicInfos.get(listPosition).getTitle());
+        intent.putExtra("duration", listMusicInfos.get(listPosition).getDuration());
+        return intent;
     }
 
     //用来接收Server发回来的广播

@@ -26,14 +26,17 @@ public class PlayService extends Service {
 
     private String path;            // 音乐文件路径
     private boolean isPause;        // 暂停状态
-    private int listMusicPosition = 0;        // 记录当前正在播放的音乐
+
+    private int listPosition = 0;        // 记录当前正在播放的音乐
     private int currentTime;        //当前播放进度
     private PlayServiceReceiver playServiceReceiver;  //自定义广播接收器
     private String singer;//歌手
     private String song;//歌名
     private int duration;           //音乐的长度
-    private int status = 3;         //播放状态，默认为顺序播放
     private int action;
+
+    private int status = 3;         //播放状态，默认为顺序播放
+
 
     private Handler handler = new Handler() {
         @Override
@@ -43,7 +46,7 @@ public class PlayService extends Service {
                 Intent intent = new Intent();
                 intent.setAction(Constant.BrocastConstant.MUSIC_CURRENT);
                 intent.putExtra("currentTime", currentTime);
-                intent.putExtra("listPosition",listMusicPosition);
+                intent.putExtra("listPosition", listPosition);
                 intent.putExtra("isPause", isPause);
                 intent.putExtra("seekBarProgress", currentTime * 100 / duration);
                 intent.putExtra("singer", singer);
@@ -63,13 +66,13 @@ public class PlayService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (status == 3) { // 顺序播放
-                    listMusicPosition++;  //下一首位置
-                    if (listMusicPosition <= musicList.size() - 1) {
+                    listPosition++;  //下一首位置
+                    if (listPosition <= musicList.size() - 1) {
                         Intent sendIntent = new Intent();
                         sendIntent.putExtra("current", currentTime);
                         sendBroadcast(sendIntent);
-                        path = musicList.get(listMusicPosition).getUrl();
-                        duration = (int) musicList.get(listMusicPosition).getDuration();
+                        path = musicList.get(listPosition).getUrl();
+                        duration = (int) musicList.get(listPosition).getDuration();
                         play(0);
                     } else {
                         mp.seekTo(0);
@@ -104,27 +107,24 @@ public class PlayService extends Service {
 
     @Override
     public void onStart(Intent intent, int startId) {
-        path = intent.getStringExtra("url");        //歌曲路径
-        listMusicPosition = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
-        action = intent.getIntExtra("action", 0);         //播放信息
-        singer = intent.getStringExtra("singer");
-        song = intent.getStringExtra("song");
-        duration = (int) intent.getLongExtra("duration", -1);
-        if (action == Constant.PlayConstant.PLAY) {    //直接播放音乐
-            play(0);
-        } else if (action == Constant.PlayConstant.PLAY_PAUSE) {    //暂停
-            pause();
-        } else if (action == Constant.PlayConstant.PLAY_STOP) {     //停止
-            stop();
-        } else if (action == Constant.PlayConstant.PLAY_CONTINUE) { //继续播放
-            resume();
-        } else if (action == Constant.PlayConstant.PLAY_NEXT) {     //下一首
-            nextMusic(path, 0, singer, song);
-        } else if (action == Constant.PlayConstant.PLAY_PROGRESS) {  //进度更新
-            currentTime = intent.getIntExtra("progress", -1);
-            play(currentTime);
-        } else if (action == Constant.PlayConstant.PLAY_NOW) {
-            handler.sendEmptyMessage(1);
+
+        getIntentExtra(intent);
+        switch (action) {
+            case Constant.PlayConstant.PLAY:
+                play(0);
+                break;
+            case Constant.PlayConstant.PLAY_STOP:
+                stop();
+                break;
+            case Constant.PlayConstant.PLAY_PAUSE:
+                pause();
+                break;
+            case Constant.PlayConstant.PLAY_NEXT:
+                nextMusic(path, 0, singer, song);
+                break;
+            case Constant.PlayConstant.PLAY_CONTINUE:
+                resume();
+                break;
         }
         super.onStart(intent, startId);
     }
@@ -215,11 +215,27 @@ public class PlayService extends Service {
             if (currentTime > 0) { // 如果音乐不是从头播放
                 mp.seekTo(currentTime);
             }
-//            Intent intent = new Intent();
-//            duration = mediaPlayer.getDuration();
-//            intent.putExtra("duration", duration);  //通过Intent来传递歌曲的总长度
-//            sendBroadcast(intent);
         }
+    }
+
+    private Intent setIntentExtra(Intent intent, int action, int listPosition) {
+        intent.putExtra("action", action);
+        intent.putExtra("singer", musicList.get(listPosition).getArtist());
+        intent.putExtra("songName", musicList.get(listPosition).getTitle());
+        intent.putExtra("duration", musicList.get(listPosition).getDuration());
+        return intent;
+    }
+
+
+    private Intent getIntentExtra(Intent intent) {
+        path = intent.getStringExtra("url");        //歌曲路径
+        listPosition = intent.getIntExtra("listPosition", -1);   //当前播放歌曲的在MusicList的位置
+        action = intent.getIntExtra("action", 0);         //播放信息
+        singer = intent.getStringExtra("singer");
+        song = intent.getStringExtra("song");
+        duration = (int) intent.getLongExtra("duration", -1);
+
+        return intent;
     }
 
     public class PlayServiceReceiver extends android.content.BroadcastReceiver {

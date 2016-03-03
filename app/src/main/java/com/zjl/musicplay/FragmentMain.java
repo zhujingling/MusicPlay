@@ -20,11 +20,11 @@ import java.util.Random;
 /**
  * Created by Administrator on 2016/2/24.
  */
-public class FragmentMain extends Fragment  {
+public class FragmentMain extends Fragment {
 
     private FragmentMusic fragmentMusic;
     private TextView tv_love;
-    private RelativeLayout jump_local_music;
+    private RelativeLayout tomusiclist;
     private ImageView play_music;
     private TextView song_count;
 
@@ -43,20 +43,20 @@ public class FragmentMain extends Fragment  {
     }
 
     private void initComponent(View view) {
-       try{
-           play_music = (ImageView) view.findViewById(R.id.play_music);
-           tv_love = (TextView) view.findViewById(R.id.tv_love);
-           jump_local_music = (RelativeLayout) view.findViewById(R.id.fragment_music);
-           song_count = (TextView) view.findViewById(R.id.song_count);
-           song_count.setText(Integer.toString(CommonManage.getCommoManage().musicList.size())+"首");
-       }catch (Exception e){
-           e.printStackTrace();
-       }
+        try {
+            play_music = (ImageView) view.findViewById(R.id.play_music);
+            tv_love = (TextView) view.findViewById(R.id.mine_love);
+            tomusiclist = (RelativeLayout) view.findViewById(R.id.fragment_music);
+            song_count = (TextView) view.findViewById(R.id.song_count);
+            song_count.setText(Integer.toString(CommonManage.getCommoManage().musicList.size()) + "首");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initSetViewOnClick() {
         tv_love.setOnClickListener(new initEvents());
-        jump_local_music.setOnClickListener(new initEvents());
+        tomusiclist.setOnClickListener(new initEvents());
         play_music.setOnClickListener(new initEvents());
     }
 
@@ -84,14 +84,20 @@ public class FragmentMain extends Fragment  {
 
     public void playMusic(int listPosition) {
         Intent intent = new Intent(getActivity(), PlayService.class);
-        intent.putExtra("url", CommonManage.getCommoManage().musicList.get(listPosition).getUrl());
-        intent.putExtra("listPosition", listPosition);
-        intent.putExtra("action", Constant.PlayConstant.PLAY);
-        intent.putExtra("singer", CommonManage.getCommoManage().musicList.get(listPosition).getArtist());
-        intent.putExtra("song", CommonManage.getCommoManage().musicList.get(listPosition).getTitle());
-        intent.putExtra("duration", CommonManage.getCommoManage().musicList.get(listPosition).getDuration());
+        setIntentExtra(intent, Constant.PlayConstant.PLAY, listPosition);
         getActivity().startService(intent);
         CommonManage.getCommoManage().isPlaying = true;
+    }
+
+
+    private Intent setIntentExtra(Intent intent, int action, int listPosition) {
+        intent.putExtra("action", action);
+        intent.putExtra("url", CommonManage.getCommoManage().musicList.get(listPosition).getUrl());
+        intent.putExtra("listPosition", listPosition);
+        intent.putExtra("singer", CommonManage.getCommoManage().musicList.get(listPosition).getArtist());
+        intent.putExtra("songName", CommonManage.getCommoManage().musicList.get(listPosition).getTitle());
+        intent.putExtra("duration", CommonManage.getCommoManage().musicList.get(listPosition).getDuration());
+        return intent;
     }
 
     /**
