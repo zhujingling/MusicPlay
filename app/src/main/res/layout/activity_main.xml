@@ -47,7 +47,7 @@
                 android:id="@+id/play_pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/bottom_song_name"
+                android:layout_alignTop="@+id/song_name"
                 android:layout_marginRight="20dp"
                 android:layout_toLeftOf="@+id/play_next"
                 android:background="@drawable/play_pause" />
@@ -65,7 +65,7 @@
                 android:progress="0"/>
 
             <TextView
-                android:id="@+id/bottom_song_name"
+                android:id="@+id/song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/seek_bar"
@@ -75,11 +75,11 @@
                 android:textColor="#000000" />
 
             <TextView
-                android:id="@+id/bottom_singer"
+                android:id="@+id/singer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/bottom_song_name"
-                android:layout_below="@+id/bottom_song_name"
+                android:layout_alignLeft="@+id/song_name"
+                android:layout_below="@+id/song_name"
                 android:text="歌手名称"
                 android:textSize="12dp" />
             <!--</FrameLayout>-->
