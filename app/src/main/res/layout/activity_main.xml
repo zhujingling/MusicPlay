@@ -66,11 +66,14 @@
                 android:id="@+id/song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="100dp"
                 android:layout_below="@+id/seek_bar"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/bottom_header"
                 android:text="歌名"
-                android:textColor="#000000" />
+                android:textColor="#000000"
+                android:singleLine="true"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/singer"
@@ -78,8 +81,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/song_name"
                 android:layout_below="@+id/song_name"
+                android:maxWidth="100dp"
                 android:text="歌手名称"
-                android:textSize="12dp" />
+                android:textSize="12dp"
+                android:singleLine="true"
+                android:ellipsize="end"/>
             <!--</FrameLayout>-->
         </RelativeLayout>
     </FrameLayout>

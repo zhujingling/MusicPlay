@@ -21,16 +21,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zjl.adapter.MusicListViewAdapter;
+import com.zjl.adapter.ListViewSortAdapater;
 import com.zjl.component.LettersSideBarView;
 import com.zjl.constant.CommonManage;
 import com.zjl.constant.Constant;
 import com.zjl.entity.Music;
+import com.zjl.entity.SortEntity;
 import com.zjl.fragmentchange.ISwitchFragment;
 import com.zjl.service.PlayService;
+import com.zjl.util.CharacterParser;
+import com.zjl.util.PinYinComparator;
 import com.zjl.util.Sort;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +44,6 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
 
     private ISwitchFragment switchFragment;
     private FragmentMain fragmentMain;
-    private MusicListViewAdapter musicListViewAdapter;
     private Sort mSort;
     private ArrayList<String> musicListViewTitle;//音乐列表的标题
     private List<Music> listMusicInfos;
@@ -56,6 +59,11 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     private int currentTime;
     private String url;
     private FragmentMusicReceiver fragmentMusicReceiver;
+
+    private PinYinComparator pinyinComparator;
+    private CharacterParser characterParser;
+    private List<SortEntity> sortEntityList; // 数据
+    private ListViewSortAdapater listViewSortAdapater;
 
     public static FragmentMusic newInstance() {
         FragmentMusic fragment = new FragmentMusic();
@@ -102,8 +110,8 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     public void onTouchingLetterChanged(String s) {
         int position = 0;
         // 该字母首次出现的位置
-        if (musicListViewAdapter != null) {
-            position = musicListViewAdapter.checkSection(s);
+        if (listViewSortAdapater != null) {
+            position = listViewSortAdapater.checkSection(s);
         }
         if (position != -1) {
             musicListView.setSelection(position);
@@ -111,6 +119,8 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     }
 
     private void initComponent(View view) {
+        characterParser=new CharacterParser();
+        pinyinComparator=new PinYinComparator();
         musicListView = (ListView) view.findViewById(R.id.music_list);
         lettersSideBarView = (LettersSideBarView) view.findViewById(R.id.letter_sidebar);
         mTagIcon = (TextView) this.getActivity().getLayoutInflater().inflate(R.layout.music_tag_icon, null);
@@ -138,12 +148,13 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     }
 
     private void initAdapter() {
-        mSort = new Sort();
         setOldData(CommonManage.getCommoManage().musicList);
-        musicListViewTitle = mSort.addChar(mSort.autoSort(oldData));
-        musicListViewAdapter = new MusicListViewAdapter(getActivity(), android.R.layout.simple_list_item_1, musicListViewTitle);
-        musicListView.setAdapter(musicListViewAdapter);
+        sortEntityList = filledData(oldData);// 填充数据
+        Collections.sort(sortEntityList, pinyinComparator);
+        listViewSortAdapater = new ListViewSortAdapater(getActivity(), sortEntityList);
+        musicListView.setAdapter(listViewSortAdapater);
     }
+
 
     private void initSetViewOnClick() {
         musicListView.setOnTouchListener(new initEvents());
@@ -156,6 +167,34 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
         for (int i = 0; i < musicList.size(); i++) {
             oldData[i] = musicList.get(i).getArtist() + " - " + musicList.get(i).getTitle();
         }
+    }
+
+
+    /**
+     * 填充数据
+     *
+     * @param date
+     * @return
+     */
+    private List<SortEntity> filledData(String[] date) {
+        List<SortEntity> mSortList = new ArrayList<SortEntity>();
+
+        for (int i = 0; i < date.length; i++) {
+            SortEntity sortEntity = new SortEntity();
+            sortEntity.setName(date[i]);
+            String pinyin = characterParser.getSelling(date[i]);
+            String sortString = pinyin.substring(0, 1).toUpperCase();
+
+            if (sortString.matches("[A-Z]")) {
+                sortEntity.setSortLetters(sortString.toUpperCase());
+            } else {
+                sortEntity.setSortLetters("#");
+            }
+
+            mSortList.add(sortEntity);
+        }
+        return mSortList;
+
     }
 
     /**
@@ -200,6 +239,9 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Toast.makeText(getActivity(),
+                    ((SortEntity) listViewSortAdapater.getItem(position)).getName(),
+                    Toast.LENGTH_SHORT).show();
             listPosition = position;
             play();
         }

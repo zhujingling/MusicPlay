@@ -2,18 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="5dip">
+    android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#D4D4D4">
+
+        <TextView
+            android:id="@+id/catalog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dip"
+            android:paddingLeft="10dip"
+            android:paddingTop="3dip"
+            android:text="A" />
+    </LinearLayout>
     <!--歌手-->
-    <TextView
-        android:id="@+id/music_list_singer"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:textSize="@dimen/textSize"
-        android:gravity="center_vertical"
-        android:paddingLeft="5dip" />
-    <!--歌名-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/music_list_singer"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dip"
+            android:textSize="@dimen/textSize" />
+        <!--歌名-->
+    </LinearLayout>
 
 
 </LinearLayout>
