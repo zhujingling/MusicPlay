@@ -12,7 +12,6 @@ public class SortEntity {
         this.name = name;
         this.sortLetters = sortLetters;
         this.sortKey = sortKey;
-
     }
 
     public SortEntity() {

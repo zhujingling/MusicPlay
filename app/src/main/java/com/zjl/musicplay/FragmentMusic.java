@@ -119,8 +119,8 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
     }
 
     private void initComponent(View view) {
-        characterParser=new CharacterParser();
-        pinyinComparator=new PinYinComparator();
+        characterParser = new CharacterParser();
+        pinyinComparator = new PinYinComparator();
         musicListView = (ListView) view.findViewById(R.id.music_list);
         lettersSideBarView = (LettersSideBarView) view.findViewById(R.id.letter_sidebar);
         mTagIcon = (TextView) this.getActivity().getLayoutInflater().inflate(R.layout.music_tag_icon, null);
@@ -178,13 +178,11 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
      */
     private List<SortEntity> filledData(String[] date) {
         List<SortEntity> mSortList = new ArrayList<SortEntity>();
-
         for (int i = 0; i < date.length; i++) {
             SortEntity sortEntity = new SortEntity();
             sortEntity.setName(date[i]);
             String pinyin = characterParser.getSelling(date[i]);
             String sortString = pinyin.substring(0, 1).toUpperCase();
-
             if (sortString.matches("[A-Z]")) {
                 sortEntity.setSortLetters(sortString.toUpperCase());
             } else {
@@ -239,10 +237,16 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(getActivity(),
-                    ((SortEntity) listViewSortAdapater.getItem(position)).getName(),
-                    Toast.LENGTH_SHORT).show();
-            listPosition = position;
+            int realPosition = 0;
+            String tag = ((SortEntity) listViewSortAdapater.getItem(position)).getName();
+            Toast.makeText(getActivity(), tag, Toast.LENGTH_SHORT).show();
+            for (int i = 0; i < CommonManage.getCommoManage().musicList.size(); i++) {
+                String strCompara = CommonManage.getCommoManage().musicList.get(i).getArtist() + " - " + CommonManage.getCommoManage().musicList.get(i).getTitle();
+                if (tag.equals(strCompara)) {
+                    realPosition = i;
+                }
+            }
+            listPosition = realPosition;
             play();
         }
     }
