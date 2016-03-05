@@ -268,6 +268,12 @@ public class FragmentMusic extends Fragment implements LettersSideBarView.OnTouc
         return intent;
     }
 
+    @Override
+    public void onDestroy() {
+        getActivity().unregisterReceiver(fragmentMusicReceiver);
+        super.onDestroy();
+    }
+
     //用来接收Server发回来的广播
     public class FragmentMusicReceiver extends android.content.BroadcastReceiver {
 

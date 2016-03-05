@@ -193,6 +193,7 @@ public class PlayService extends Service {
     @Override
     public void onDestroy() {
         if (mp != null) {
+            unregisterReceiver(playServiceReceiver);
             mp.stop();
             mp.release();
             mp = null;

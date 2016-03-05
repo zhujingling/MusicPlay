@@ -80,6 +80,12 @@ public class MainActivity extends FragmentActivity implements ISwitchFragment {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mainActivityReceiver);
+        super.onDestroy();
+    }
+
     private void initComponent() {
         playOrPause = (ImageButton) findViewById(R.id.play_pause);
         playNext = (ImageButton) findViewById(R.id.play_next);
@@ -230,6 +236,7 @@ public class MainActivity extends FragmentActivity implements ISwitchFragment {
                 }
             }
         }
+
 
     }
 
